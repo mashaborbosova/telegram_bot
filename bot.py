@@ -14,7 +14,7 @@ def main():
     handler = MessageHandler(Filters.all, do_echo)  # отфильтровываем сообщения: теперь устройство должно реагировать
     start_handler = CommandHandler('start', do_start)
     help_handler = CommandHandler('help', do_help)
-    schedule_handler = MessageHandler(Filters.all, do_sticker)
+    schedule_handler = MessageHandler(Filters.all, do_schedule)
 
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(help_handler)
@@ -24,20 +24,13 @@ def main():
     updater.idle()
 
 
-def do_echo(update: Update, context):
-    user = update.message.from_user.is_bot
-    name = update.message.from_user.first_name
-    if user:
-        update.message.reply_text(text=f"Ты - бот! Уходи отсюда!!!")
-    else:
-        update.message.reply_text(text=f"ААААА! {name} что ты делаешь?")
-
-
+def do_echo(update, context):
+    text = update.message.text
 
     if text == "привет":
-        update.message.reply_text(text="доброго времени суток, друг", reply_markup=ReplyKeyboardRemove())
+        update.message.reply_text(text="доброго времени суток, друг")
     else:
-        update.message.reply_text(text="Привет! Нажми /start чтобы запустить меня:)", reply_markup=ReplyKeyboardRemove())
+        update.message.reply_text(text="Привет! Нажми /start чтобы запустить меня:)")
 
 
 
@@ -55,23 +48,55 @@ def do_help(update, context):
 
 
 
-def do_sticker(update: Update, context):
-    sticker_id = update.message.sticker.file_id
-    update.message.reply_text(sticker_id)
-    update.message.reply_sticker(sticker_id)
+# def do_sticker(update: Update, context):
+#     sticker_id = update.message.sticker.file_id
+#     update.message.reply_text(sticker_id)
+#     update.message.reply_sticker(sticker_id)
 
 
-def do_something(update, context):
+def get_schedule(day):
+    reply_text = ""
+    for i in range(1, 9):
+        #  print(schedule_page.cell(row=i, column=1).value)
+        reply_text += schedule_page.cell(row=i, column=day).value + "\n"
+    return reply_text
+
+def do_schedule(update, context):
     text = update.message.text
+    days = ["понедельник", "вторник", "среда", "четверг", "пятница"]
+    if text == "привет":
+        update.message.reply_text(text="Привет! Нажми /start чтобы запустить меня:)")
+        return
 
-    print(stickers_page.max_row)
-    for row in range(2, stickers_page.max_row + 1):
-        catch_phrase = stickers_page.cell(row=row, column=4).value
-        print(catch_phrase)
-        print(text)
-        if catch_phrase in text:
-            sticker_id = stickers_page.cell(row=row, column=3).value
-            update.message.reply_sticker(sticker_id)
+    for i in days:
+        if text == i:
+            if text == "понедельник":
+                update.message.reply_text(text=get_schedule(1))
+            elif text == "вторник":
+                update.message.reply_text(text=get_schedule(2))
+            elif text == "среда":
+                update.message.reply_text(text=get_schedule(3))
+            elif text == "четверг":
+                update.message.reply_text(text=get_schedule(4))
+            elif text == "пятница":
+                update.message.reply_text(text=get_schedule(5))
+            return
+
+
+    update.message.reply_text(text="Ты втираешь мне какую-то дичь. Нажми /start чтобы запустить меня:)")
+
+
+
+
+
+    # print(stickers_page.max_row)
+    # for row in range(2, stickers_page.max_row + 1):
+    #     catch_phrase = stickers_page.cell(row=row, column=4).value
+    #     print(catch_phrase)
+    #     print(text)
+    #     if catch_phrase in text:
+    #         sticker_id = stickers_page.cell(row=row, column=3).value
+    #         update.message.reply_sticker(sticker_id)
 
 
 

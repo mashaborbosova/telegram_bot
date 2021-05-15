@@ -6,5 +6,5 @@ sheet_1 = book['Лист1']
 schedule_page = book['расписание']
 
 print(book.worksheets)
-for i in range(1, 37):
+for i in range(1, 9):
     print(schedule_page.cell(row=i, column=1).value)
