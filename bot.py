@@ -5,7 +5,7 @@ from openpyxl import load_workbook
 TOKEN = '1656164530:AAF-4RoNDN6ei2TEhFHbagbJ_FNOAL26f9Y'
 book = load_workbook('база данных.xlsx')
 sheet_1 = book['Лист1']
-stickers_page = book['стикеры']
+schedule_page = book['расписание']
 
 
 def main():
@@ -14,13 +14,11 @@ def main():
     handler = MessageHandler(Filters.all, do_echo)  # отфильтровываем сообщения: теперь устройство должно реагировать
     start_handler = CommandHandler('start', do_start)
     help_handler = CommandHandler('help', do_help)
-    keyboard_handler = MessageHandler(Filters.text, do_something)
-    sticker_handler = MessageHandler(Filters.sticker, do_sticker)
+    schedule_handler = MessageHandler(Filters.all, do_sticker)
 
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(help_handler)
-    dispatcher.add_handler(keyboard_handler)
-    dispatcher.add_handler(sticker_handler)
+    dispatcher.add_handler(schedule_handler)
     dispatcher.add_handler(handler)
     updater.start_polling()
     updater.idle()
@@ -33,16 +31,22 @@ def do_echo(update: Update, context):
         update.message.reply_text(text=f"Ты - бот! Уходи отсюда!!!")
     else:
         update.message.reply_text(text=f"ААААА! {name} что ты делаешь?")
-        update.message.reply_text(text="Я не понимаю")
+
+
+
+    if text == "привет":
+        update.message.reply_text(text="доброго времени суток, друг", reply_markup=ReplyKeyboardRemove())
+    else:
+        update.message.reply_text(text="Привет! Нажми /start чтобы запустить меня:)", reply_markup=ReplyKeyboardRemove())
+
 
 
 def do_start(update, context):
     keyboard = [
-        ["1", "2", "3"],
-        ["hello", "bye"]
+        ["понедельник", "вторник", "среда", "четверг", "пятница"]
     ]
     update.message.reply_text(
-        text="Ты запустил меня человек",
+        text="Выбери день чтобы узнать расписание",
         reply_markup=ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True))
 
 
@@ -50,14 +54,11 @@ def do_help(update, context):
     update.message.reply_text(text="что случилось? Всё ж было норм")
 
 
+
 def do_sticker(update: Update, context):
     sticker_id = update.message.sticker.file_id
     update.message.reply_text(sticker_id)
     update.message.reply_sticker(sticker_id)
-
-
-def do_list(update: Update, context)
-
 
 
 def do_something(update, context):
@@ -73,14 +74,7 @@ def do_something(update, context):
             update.message.reply_sticker(sticker_id)
 
 
-    if text == "1":
-        update.message.reply_text(text="вы нажали 1", reply_markup=ReplyKeyboardRemove())
-    elif text == "2":
-        update.message.reply_text(text="вы нажали 2", reply_markup=ReplyKeyboardRemove())
-    elif text == "3":
-        update.message.reply_text(text="вы нажали 3", reply_markup=ReplyKeyboardRemove())
-    else:
-        update.message.reply_text(text="вы нажали что-то еще", reply_markup=ReplyKeyboardRemove())
+
 
 
 main()
